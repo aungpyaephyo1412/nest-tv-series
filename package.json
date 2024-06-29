@@ -1,0 +1,12 @@
+{
+  "name": "tv-series",
+  "version": "1.0.0",
+  "description": "React.js and Nest.js tv series",
+  "scripts": {
+    "dev:backend": "cd server && pnpm start:dev",
+    "dev:frontend": "cd client && pnpm dev",
+    "dev" : "pnpm dev:frontend | pnpm dev:backend"
+  },
+  "author": "",
+  "license": "ISC"
+}

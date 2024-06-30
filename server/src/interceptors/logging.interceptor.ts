@@ -7,7 +7,7 @@ import {
 } from '@nestjs/common';
 import { Observable } from 'rxjs';
 import { tap } from 'rxjs/operators';
-import { _concatStr } from '../../util';
+import { _concatStr } from '../util';
 
 @Injectable()
 export class LoggingInterceptor implements NestInterceptor {

@@ -12,4 +12,4 @@ export const LoginAuthSchema = z
   })
   .required();
 
-export type LoginAuthDto = z.infer<typeof LoginAuthSchema>;
+export type LoginDto = z.infer<typeof LoginAuthSchema>;

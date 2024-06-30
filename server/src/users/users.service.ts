@@ -1,19 +1,29 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { Prisma, User } from '@prisma/client';
 import { createPaginator } from 'prisma-pagination';
-import { CreateAuthDto } from '../auth/dto/create-auth.dto';
 import { PrismaService } from '../database/prisma/prisma.service';
-import { PaginatedOutputDto } from '../pagination/pagination.dto';
-import { CreateUserDto } from './dto/create-user.dto';
+import {
+  DeleteUserParams,
+  FindAllUsersParams,
+  FindOneUserParams,
+  IUsersService,
+  UpdateUserParams,
+} from './interfaces/IUsersService';
 
 @Injectable()
-export class UsersService {
+export class UsersService implements IUsersService {
   constructor(private readonly prismaService: PrismaService) {}
 
-  async create(createAuthDto: CreateAuthDto): Promise<User> {
-    return this.prismaService.user.create({
-      data: createAuthDto,
-    });
+  async create(userCreateInput: Prisma.UserCreateInput): Promise<User> {
+    return this.prismaService.user.create({ data: userCreateInput });
+  }
+
+  async find(userWhereInput: Prisma.UserWhereInput) {
+    try {
+      return this.prismaService.user.findFirst({ where: userWhereInput });
+    } catch (err) {
+      throw new NotFoundException({ message: 'User not found' });
+    }
   }
 
   async findByEmailOrUsername(emailOrUsername: string): Promise<User | null> {
@@ -24,20 +34,17 @@ export class UsersService {
     });
   }
 
-  async findOne(
-    userWhereUniqueInput: Prisma.UserWhereUniqueInput,
-  ): Promise<User | null> {
-    return this.prismaService.user.findUnique({
-      where: userWhereUniqueInput,
-    });
+  async findOne(params: FindOneUserParams): Promise<User | null> {
+    try {
+      return this.prismaService.user.findUnique({
+        where: params.where,
+      });
+    } catch (err) {
+      throw new NotFoundException({ message: 'User not found' });
+    }
   }
 
-  async findAll(params: {
-    page?: number;
-    perPage?: number;
-    where?: Prisma.UserWhereInput;
-    orderBy?: Prisma.UserOrderByWithRelationInput;
-  }): Promise<PaginatedOutputDto<CreateUserDto>> {
+  async findAll(params: FindAllUsersParams) {
     const { page = 1, perPage = 50, where, orderBy } = params;
     const paginate = createPaginator({ perPage });
     return paginate<User, Prisma.UserFindManyArgs>(
@@ -52,20 +59,25 @@ export class UsersService {
     );
   }
 
-  async update(params: {
-    where: Prisma.UserWhereUniqueInput;
-    data: Prisma.UserUpdateInput;
-  }): Promise<User> {
+  async update(params: UpdateUserParams): Promise<User | null> {
     const { where, data } = params;
-    return this.prismaService.user.update({
-      where,
-      data,
-    });
+    try {
+      return this.prismaService.user.update({
+        where,
+        data,
+      });
+    } catch (err) {
+      throw new NotFoundException({ message: 'User not found' });
+    }
   }
 
-  async delete(where: Prisma.UserWhereUniqueInput): Promise<User> {
-    return this.prismaService.user.delete({
-      where,
-    });
+  async delete(params: DeleteUserParams): Promise<User | null> {
+    try {
+      return this.prismaService.user.delete({
+        where: params.where,
+      });
+    } catch (err) {
+      throw new NotFoundException({ message: 'User not found' });
+    }
   }
 }

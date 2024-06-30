@@ -45,4 +45,4 @@ export const CreateAuthSchema = z
     }
   });
 
-export type CreateAuthDto = z.infer<typeof CreateAuthSchema>;
+export type RegisterDto = z.infer<typeof CreateAuthSchema>;

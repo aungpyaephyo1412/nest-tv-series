@@ -1,6 +1,6 @@
 import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
-import { IS_PUBLIC_KEY } from '../decorators/isPublic.decorator';
+import { IS_PUBLIC_KEY } from '../decorators/is-public.decorator';
 import { Role, ROLES_KEY } from '../decorators/roles.decorator';
 
 @Injectable()
@@ -13,7 +13,6 @@ export class RolesGuard implements CanActivate {
       context.getClass(),
     ]);
     if (isPublic) {
-      // 💡 See this condition
       return true;
     }
     const requiredRoles = this.reflector.getAllAndOverride<Role[]>(ROLES_KEY, [

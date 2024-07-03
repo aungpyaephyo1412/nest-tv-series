@@ -2,21 +2,20 @@ import {
   BadRequestException,
   Body,
   Controller,
-  NotFoundException,
   Post,
   Put,
   UnauthorizedException,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { MailService } from '../mail/mail.service';
-import { ZodValidationPipe } from '../pipes/zod-validation.pipe';
-import { userDtoSchema } from '../users/dto/user.dto';
-import { getRandomInt } from '../util';
-import { DtoTransformerService } from '../util/dto-transformer.service';
-import { ErrorResponseService } from '../util/error-response.service';
-import { PasswordService } from '../util/password.service';
+import { MailService } from '../../mail/mail.service';
+import { ZodValidationPipe } from '../../pipes/zod-validation.pipe';
+import { getRandomInt } from '../../util';
+import { DtoTransformerService } from '../../util/dto-transformer.service';
+import { ErrorResponseService } from '../../util/error-response.service';
+import { PasswordService } from '../../util/password.service';
+import { userDtoSchema } from '../user/dto/user.dto';
 import { AuthService } from './auth.service';
-import { Public } from './decorators/is-public.decorator';
+import { Public } from './decorators/public.decorator';
 import {
   ForgotPasswordDto,
   forgotPasswordDtoSchema,
@@ -80,9 +79,6 @@ export class AuthController {
     const user = await this.authService.findByEmailOrUsername(
       loginAuthDto.identifier,
     );
-
-    if (!user) throw new NotFoundException({ message: 'User not found' });
-
     const isPasswordValid = await this.passwordService.validate(
       loginAuthDto.password,
       user.password,
@@ -105,8 +101,6 @@ export class AuthController {
     const user = await this.authService.findByEmailOrUsername(
       verifyAuthDto.email,
     );
-
-    if (!user) throw new NotFoundException({ message: 'User not found' });
     if (user.isVerified)
       throw new BadRequestException({ message: 'Already verified' });
     if (user.rememberToken !== verifyAuthDto.token)
@@ -128,9 +122,6 @@ export class AuthController {
     const user = await this.authService.findByEmailOrUsername(
       forgotPasswordDto.identifier,
     );
-
-    if (!user) throw new NotFoundException({ message: 'User not found' });
-
     const resetToken = crypto.randomUUID().toString();
     await this.authService.update({
       where: { email: user.email },
@@ -156,9 +147,6 @@ export class AuthController {
         { resetTokenExpired: { gt: new Date() } },
       ],
     });
-
-    if (!user) throw new NotFoundException({ message: 'User not found' });
-
     const hashPassword = await this.passwordService.hash(
       resetPasswordDto.password,
     );

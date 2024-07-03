@@ -10,7 +10,7 @@ import { tap } from 'rxjs/operators';
 import { _concatStr } from '../util';
 
 @Injectable()
-export class LoggingInterceptor implements NestInterceptor {
+export class ReqLoggingInterceptor implements NestInterceptor {
   private readonly _logger: Logger;
   constructor() {
     this._logger = new Logger('REQUEST');

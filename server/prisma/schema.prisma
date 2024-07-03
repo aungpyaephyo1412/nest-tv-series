@@ -12,14 +12,21 @@ enum Role {
   User
 }
 
+enum Gender {
+  Male
+  Female
+  Other
+}
+
 model User {
-  id                String    @id @default(uuid())
+  id                Int       @id @default(autoincrement())
   avatar            String?
   name              String
   role              Role      @default(User)
   email             String    @unique
   username          String    @unique @default(cuid())
   password          String
+  gender            Gender?
   address           String?
   dateOfBirth       DateTime?
   isVerified        Boolean   @default(false)

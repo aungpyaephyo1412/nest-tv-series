@@ -13,6 +13,9 @@ export const CreateAuthSchema = z
       .string({ message: 'Password is required' })
       .min(6, { message: 'Password must be at least 6 characters' })
       .max(100, { message: 'Password must be at most 100 characters' }),
+    address: z.string({ message: 'Address must be string' }).or(z.null()),
+    dateOfBirth: z.coerce.date().or(z.null()),
+    gender: z.enum(['Male', 'Female', 'Other']).or(z.null()),
   })
   .superRefine(({ password }, checkPassComplexity) => {
     const containsUppercase = (ch: string) => /[A-Z]/.test(ch);

@@ -18,6 +18,7 @@ export const patchUserDtoSchema = z.object({
 export type PatchUserDto = z.infer<typeof patchUserDtoSchema>;
 
 export class patchUserDto {
+  avatar?: string;
   name?: string;
   username?: string;
   password?: string;

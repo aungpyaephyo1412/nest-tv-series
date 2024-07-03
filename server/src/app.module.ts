@@ -3,15 +3,17 @@ import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { APP_GUARD } from '@nestjs/core';
 import { JwtModule } from '@nestjs/jwt';
+import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { AuthModule } from './auth/auth.module';
-import { AuthGuard } from './auth/guards/auth.guard';
-import { RolesGuard } from './auth/guards/roles.guard';
 import { PrismaModule } from './database/prisma/prisma.module';
+import { AuthModule } from './features/auth/auth.module';
+import { AuthGuard } from './features/auth/guards/auth.guard';
+import { RolesGuard } from './features/auth/guards/roles.guard';
+import { FileModule } from './features/file/file.module';
+import { UsersModule } from './features/user/users.module';
 import { MailModule } from './mail/mail.module';
 import { MailService } from './mail/mail.service';
-import { UsersModule } from './users/users.module';
 import { PasswordService } from './util/password.service';
 
 @Module({
@@ -34,7 +36,25 @@ import { PasswordService } from './util/password.service';
         },
       },
     }),
+    ThrottlerModule.forRoot([
+      {
+        name: 'short',
+        ttl: 1000, // 1 sec
+        limit: 5,
+      },
+      {
+        name: 'medium',
+        ttl: 10000, // 10 sec
+        limit: 5,
+      },
+      {
+        name: 'long',
+        ttl: 60000, // 1 min
+        limit: 10,
+      },
+    ]),
     ConfigModule.forRoot({ envFilePath: '.env', isGlobal: true }),
+    FileModule,
   ],
   controllers: [AppController],
   providers: [
@@ -46,6 +66,10 @@ import { PasswordService } from './util/password.service';
     {
       provide: APP_GUARD,
       useClass: RolesGuard,
+    },
+    {
+      provide: APP_GUARD,
+      useClass: ThrottlerGuard,
     },
     PasswordService,
     MailService,

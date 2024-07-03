@@ -4,7 +4,7 @@ export const reset_password = (token: string, mails: string[]) => {
     to: mails,
     subject: 'Reset Password',
     html: `<div>
-      <p>Your code is: https://loopfeed.vercel.app/reset-password/${token}.</p>
+      <p>Your code is: ${process.env.FRONTEND_URL}/reset-password/${token}.</p>
        <p>Use it to reset your password in Loopfeed.</p>
        <p>If you didn't request this, simply ignore this message.</p>
        <p>Yours, The Loopfeed Team</p>

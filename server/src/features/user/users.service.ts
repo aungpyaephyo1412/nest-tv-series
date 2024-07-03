@@ -1,7 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { Prisma, User } from '@prisma/client';
 import { createPaginator } from 'prisma-pagination';
-import { PrismaService } from '../database/prisma/prisma.service';
+import { PrismaService } from '../../database/prisma/prisma.service';
 import {
   DeleteUserParams,
   FindAllUsersParams,
@@ -18,30 +18,30 @@ export class UsersService implements IUsersService {
     return this.prismaService.user.create({ data: userCreateInput });
   }
 
-  async find(userWhereInput: Prisma.UserWhereInput) {
-    try {
-      return this.prismaService.user.findFirst({ where: userWhereInput });
-    } catch (err) {
-      throw new NotFoundException({ message: 'User not found' });
-    }
+  async find(userWhereInput: Prisma.UserWhereInput): Promise<User> {
+    const user = await this.prismaService.user.findFirst({
+      where: userWhereInput,
+    });
+    if (!user) throw new NotFoundException({ message: 'User not found' });
+    return user;
   }
 
-  async findByEmailOrUsername(emailOrUsername: string): Promise<User | null> {
-    return this.prismaService.user.findFirst({
+  async findByEmailOrUsername(emailOrUsername: string): Promise<User> {
+    const user = await this.prismaService.user.findFirst({
       where: {
         OR: [{ email: emailOrUsername }, { username: emailOrUsername }],
       },
     });
+    if (!user) throw new NotFoundException({ message: 'User not found' });
+    return user;
   }
 
-  async findOne(params: FindOneUserParams): Promise<User | null> {
-    try {
-      return this.prismaService.user.findUnique({
-        where: params.where,
-      });
-    } catch (err) {
-      throw new NotFoundException({ message: 'User not found' });
-    }
+  async findOne(params: FindOneUserParams): Promise<User> {
+    const user = await this.prismaService.user.findUnique({
+      where: params.where,
+    });
+    if (!user) throw new NotFoundException({ message: 'User not found' });
+    return user;
   }
 
   async findAll(params: FindAllUsersParams) {

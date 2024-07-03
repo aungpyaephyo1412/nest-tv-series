@@ -1,5 +1,5 @@
 import { Prisma, User } from '@prisma/client';
-import { PaginatedOutputDto } from '../../pagination/pagination.dto';
+import { PaginatedOutputDto } from '../../../pagination/pagination.dto';
 
 export interface FindAllUsersParams {
   page?: number;

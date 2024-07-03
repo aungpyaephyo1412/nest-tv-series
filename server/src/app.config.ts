@@ -1,9 +1,8 @@
 import { INestApplication } from '@nestjs/common';
-import { LoggingInterceptor } from './interceptors/logging.interceptor';
-
+import { ReqLoggingInterceptor } from './interceptors/req-logging.interceptor';
 export const appConfig = (_app: INestApplication) => {
   _app.enableCors({
-    origin: 'http://localhost:5173', // Add your frontend URL here
+    origin: process.env.FRONTEND_URL as string, // Add your frontend URL here
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
     allowedHeaders: [
       'Origin',
@@ -14,5 +13,5 @@ export const appConfig = (_app: INestApplication) => {
     ],
   });
   _app.setGlobalPrefix('api/v1');
-  _app.useGlobalInterceptors(new LoggingInterceptor());
+  _app.useGlobalInterceptors(new ReqLoggingInterceptor());
 };

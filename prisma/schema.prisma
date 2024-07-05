@@ -19,7 +19,7 @@ enum Gender {
 }
 
 model User {
-  id                Int       @id @default(autoincrement())
+  id                String    @unique @default(uuid())
   avatar            String?
   name              String
   role              Role      @default(User)
